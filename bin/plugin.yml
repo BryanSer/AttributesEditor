@@ -1,0 +1,8 @@
+name: AttributesEditor
+author: Kengxxiao
+version: 2.5
+main: kengxxiao.attributeseditor.AttributesEditor
+commands:
+  attr:
+    usage: §c错误的使用方法。
+    description: 修改物品的属性
