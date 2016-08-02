@@ -166,21 +166,21 @@ public class AttributesEditorAPI {
 	}
 	public static ItemStack addAttribute(ItemStack itemstack,String type,String slot,double amount) throws Exception
 	{
-			Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null,"asNMSCopy",new Class[]{ItemStack.class},new Object[]{itemstack});
-			Object tag = ((boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag")) ? ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "getTag") : ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
-			Object taglist = ((boolean) ReflectionUtil.invokeMethod(tag.getClass(), tag, "hasKey",new Class[] { String.class }, new Object[] { "AttributeModifiers" }))? ReflectionUtil.invokeMethod(tag.getClass(), tag, "get",new Class[] { String.class }, new Object[] { "AttributeModifiers" }): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagList"),new Class[] {}, new Object[] {});
-			Object newAttr = ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
-			ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setString",new Class[]{String.class,String.class},new Object[]{"AttributeName",type});
-			ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setString",new Class[]{String.class,String.class},new Object[]{"Name",type});
-			ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setString",new Class[]{String.class,String.class},new Object[]{"Slot",slot});
-			ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setDouble",new Class[]{String.class,double.class},new Object[]{"Amount",amount});
-			ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"Operation",0});
-			ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"UUIDLeast",894654});
-			ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"UUIDMost",2872});
-			ReflectionUtil.invokeMethod(taglist.getClass(), taglist,"add",new Class[]{ReflectionUtil.getNMSClass("NBTTagCompound")},new Object[]{newAttr});
-			ReflectionUtil.invokeMethod(tag.getClass(), tag,"set",new Class[]{String.class,ReflectionUtil.getNMSClass("NBTBase")},new Object[]{"AttributeModifiers",taglist});
-			ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"setTag",new Class[]{ReflectionUtil.getNMSClass("NBTTagCompound")},new Object[]{tag});
-			return (ItemStack)ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null,"asBukkitCopy",new Class[]{ReflectionUtil.getNMSClass("ItemStack")},new Object[]{nmsItemStack});
+		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null,"asNMSCopy",new Class[]{ItemStack.class},new Object[]{itemstack});
+		Object tag = ((boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag")) ? ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "getTag") : ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
+		Object taglist = ((boolean) ReflectionUtil.invokeMethod(tag.getClass(), tag, "hasKey",new Class[] { String.class }, new Object[] { "AttributeModifiers" }))? ReflectionUtil.invokeMethod(tag.getClass(), tag, "get",new Class[] { String.class }, new Object[] { "AttributeModifiers" }): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagList"),new Class[] {}, new Object[] {});
+		Object newAttr = ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
+		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setString",new Class[]{String.class,String.class},new Object[]{"AttributeName",type});
+		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setString",new Class[]{String.class,String.class},new Object[]{"Name",type});
+		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setString",new Class[]{String.class,String.class},new Object[]{"Slot",slot});
+		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setDouble",new Class[]{String.class,double.class},new Object[]{"Amount",amount});
+		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"Operation",0});
+		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"UUIDLeast",894654});
+		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"UUIDMost",2872});
+		ReflectionUtil.invokeMethod(taglist.getClass(), taglist,"add",new Class[]{ReflectionUtil.getNMSClass("NBTTagCompound")},new Object[]{newAttr});
+		ReflectionUtil.invokeMethod(tag.getClass(), tag,"set",new Class[]{String.class,ReflectionUtil.getNMSClass("NBTBase")},new Object[]{"AttributeModifiers",taglist});
+		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"setTag",new Class[]{ReflectionUtil.getNMSClass("NBTTagCompound")},new Object[]{tag});
+		return (ItemStack)ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null,"asBukkitCopy",new Class[]{ReflectionUtil.getNMSClass("ItemStack")},new Object[]{nmsItemStack});
 	}
 	public static ItemStack addStoredEnchantment(ItemStack itemstack,short enchType,short level) throws Exception
 	{
