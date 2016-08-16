@@ -4,16 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.FireworkEffect;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta.Generation;
-import org.bukkit.inventory.meta.FireworkEffectMeta;
-import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.potion.PotionEffectType;
-
 import kengxxiao.attributeseditor.CommandAttr;
 import kengxxiao.attributeseditor.ReflectionUtil;
 
@@ -177,7 +171,7 @@ public class AttributesEditorAPI {
 		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"Operation",0});
 		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"UUIDLeast",894654});
 		ReflectionUtil.invokeMethod(newAttr.getClass(), newAttr,"setInt",new Class[]{String.class,int.class},new Object[]{"UUIDMost",2872});
-		ReflectionUtil.invokeMethod(taglist.getClass(), taglist,"add",new Class[]{ReflectionUtil.getNMSClass("NBTTagCompound")},new Object[]{newAttr});
+		ReflectionUtil.invokeMethod(taglist.getClass(), taglist,"add",new Class[]{ReflectionUtil.getNMSClass("NBTBase")},new Object[]{newAttr});
 		ReflectionUtil.invokeMethod(tag.getClass(), tag,"set",new Class[]{String.class,ReflectionUtil.getNMSClass("NBTBase")},new Object[]{"AttributeModifiers",taglist});
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"setTag",new Class[]{ReflectionUtil.getNMSClass("NBTTagCompound")},new Object[]{tag});
 		return (ItemStack)ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null,"asBukkitCopy",new Class[]{ReflectionUtil.getNMSClass("ItemStack")},new Object[]{nmsItemStack});
@@ -190,7 +184,7 @@ public class AttributesEditorAPI {
 		Object newStoredEnchantment = ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
 		ReflectionUtil.invokeMethod(newStoredEnchantment.getClass(), newStoredEnchantment, "setShort",new Class[] { String.class, short.class },new Object[] { "id",enchType});
 		ReflectionUtil.invokeMethod(newStoredEnchantment.getClass(), newStoredEnchantment, "setShort",new Class[] { String.class, short.class},new Object[] { "lvl", level});
-		ReflectionUtil.invokeMethod(taglist.getClass(), taglist, "add",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { newStoredEnchantment });
+		ReflectionUtil.invokeMethod(taglist.getClass(), taglist, "add",new Class[] { ReflectionUtil.getNMSClass("NBTBase") }, new Object[] { newStoredEnchantment });
 		ReflectionUtil.invokeMethod(tag.getClass(), tag, "set",new Class[] { String.class, ReflectionUtil.getNMSClass("NBTBase") },new Object[] { "StoredEnchantments", taglist });
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
@@ -205,7 +199,7 @@ public class AttributesEditorAPI {
 		ReflectionUtil.invokeMethod(newPotionEffect.getClass(), newPotionEffect, "setByte",new Class[] { String.class, byte.class },new Object[] { "Amplifier", amplifier});
 		ReflectionUtil.invokeMethod(newPotionEffect.getClass(), newPotionEffect, "setByte",new Class[] { String.class, byte.class },new Object[] { "ShowParticles", showParticles});
 		ReflectionUtil.invokeMethod(newPotionEffect.getClass(), newPotionEffect, "setInt",new Class[] { String.class, int.class },new Object[] { "Duration", duration});
-		ReflectionUtil.invokeMethod(taglist.getClass(), taglist, "add",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") },new Object[] { newPotionEffect });
+		ReflectionUtil.invokeMethod(taglist.getClass(), taglist, "add",new Class[] { ReflectionUtil.getNMSClass("NBTBase") },new Object[] { newPotionEffect });
 		ReflectionUtil.invokeMethod(tag.getClass(), tag, "set",new Class[] { String.class, ReflectionUtil.getNMSClass("NBTBase") },new Object[] { "CustomPotionEffects", taglist });
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });

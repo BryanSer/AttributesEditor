@@ -1,6 +1,6 @@
 name: AttributesEditor
 author: Kengxxiao
-version: 2.5
+version: 2.7fix
 main: kengxxiao.attributeseditor.AttributesEditor
 commands:
   attr:

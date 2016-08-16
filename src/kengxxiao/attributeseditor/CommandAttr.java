@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.json.simple.JSONObject;
 
 import kengxxiao.attributeseditor.api.AttributesEditorAPI;
 
@@ -76,8 +75,10 @@ public class CommandAttr implements CommandExecutor {
 				return true;
 			}
 			if (arg3.length == 1) {
-				if (!arg3[0].equalsIgnoreCase("remove"))
+				if (!arg3[0].equalsIgnoreCase("remove") && !arg3[0].equalsIgnoreCase("unbreakable"))
 					return false;
+				if(arg3[0].equalsIgnoreCase("remove"))
+				{
 				try {
 					is = AttributesEditorAPI.removeAttribute(is);
 					if (is != null) {
@@ -91,6 +92,26 @@ public class CommandAttr implements CommandExecutor {
 				} catch (Exception e) {
 					AttributesEditorAPI.printStackTrace(player, e);
 					return true;
+				}
+				}
+				if(arg3[0].equalsIgnoreCase("unbreakable"))
+				{
+					ItemMeta im = is.getItemMeta();
+					try{
+					if(im.spigot().isUnbreakable())
+						im.spigot().setUnbreakable(false);
+					else
+						im.spigot().setUnbreakable(true);
+					is.setItemMeta(im);
+					AttributesEditorAPI.setItemInHand(player, is);
+					player.sendMessage(ChatColor.GREEN + "为物品修改无法破坏属性成功。");
+					return true;
+					}
+					catch (Exception e)
+					{
+						player.sendMessage(ChatColor.RED + "这个指令只能在Spigot及其衍生服务端上使用。");
+						return true;
+					}
 				}
 			}
 			if (arg3.length == 2) {
@@ -161,7 +182,7 @@ public class CommandAttr implements CommandExecutor {
 						sendInvavidMessage(player);
 						return true;
 					}
-					if (version >= 8) {
+					try {
 						if (!AttributesEditorAPI.isAllowedHideType(hideType)) {
 							player.sendMessage(ChatColor.RED + "这个属性类型无效。");
 							return true;
@@ -181,8 +202,8 @@ public class CommandAttr implements CommandExecutor {
 							player.sendMessage(ChatColor.GREEN + "成功隐藏了指定属性。");
 							return true;
 						}
-					} else {
-						player.sendMessage(ChatColor.RED + "这个操作要求游戏版本高于1.8，您的版本不足以达到这个要求。");
+					} catch(Exception e) {
+						player.sendMessage(ChatColor.RED + "您的游戏版本不能实现这个操作。");
 						return true;
 					}
 				}
@@ -362,6 +383,8 @@ public class CommandAttr implements CommandExecutor {
 						}
 						if(arg3[1].equalsIgnoreCase("generation"))
 						{
+							try
+							{
 							int type = Integer.valueOf(arg3[2]);
 							if(AttributesEditorAPI.isAllowedGeneration(type))
 							{
@@ -374,6 +397,12 @@ public class CommandAttr implements CommandExecutor {
 							else
 							{
 								player.sendMessage(ChatColor.RED + "您的版本不存在这个成书版本数值。");
+								return true;
+							}
+							}
+							catch(Exception e)
+							{
+								player.sendMessage(ChatColor.RED + "您的版本不能实现这个操作。");
 								return true;
 							}
 						}
@@ -439,10 +468,6 @@ public class CommandAttr implements CommandExecutor {
 					type = Integer.valueOf(arg3[1]);
 					slot = Integer.valueOf(arg3[2]);
 					amount = Double.valueOf(arg3[3]).doubleValue();
-					if (!AttributesEditorAPI.isAllowedAttrType(type) || !AttributesEditorAPI.isAllowedSlot(slot)) {
-						player.sendMessage(ChatColor.RED + "在您的版本不支持这个蓝字属性类型或部位无效。");
-						return true;
-					}
 				} catch (Exception e) {
 					sendInvavidMessage(player);
 					return true;
@@ -452,6 +477,7 @@ public class CommandAttr implements CommandExecutor {
 					is = AttributesEditorAPI.addAttribute(is, cache.get(0), cache.get(1), amount);
 					AttributesEditorAPI.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN + "蓝字属性添加成功。");
+					System.out.println(is);
 					return true;
 				} catch (Exception e) {
 					AttributesEditorAPI.printStackTrace(player, e);
