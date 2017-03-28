@@ -3,6 +3,7 @@ package kengxxiao.attributeseditor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import kengxxiao.attributeseditor.api.AttributesEditorAPI;
+import kengxxiao.attributeseditor.api.IAttributesEditorAPI;
 
 public class CommandAttr implements CommandExecutor {
 	public static int version;
@@ -23,8 +24,11 @@ public class CommandAttr implements CommandExecutor {
 	public static List<Integer> allowedEnchantment, allowedFlags = Arrays.asList(1, 2, 3, 4, 5, 6);
 	public static List<Integer> allowedPotionEffects, allowedFireworkType = Arrays.asList(0, 1, 2, 3, 4);
 	public static List<Integer> allowedGeneration = Arrays.asList(0,1,2,3);
+	private IAttributesEditorAPI api;
 
-	public CommandAttr(String ver) {
+	public CommandAttr(AttributesEditor plugin) {
+		String ver = plugin.getVersion();
+		api = plugin.getApi();
 		if (!ver.substring(2, 4).contains("-") && !ver.substring(2, 4).contains("\\.")) {
 			version = 10;
 			allowedType = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
@@ -69,7 +73,7 @@ public class CommandAttr implements CommandExecutor {
 				player.sendMessage(ChatColor.RED + "您没有使用这个命令的权限");
 				return true;
 			}
-			ItemStack is = AttributesEditorAPI.getAvailableItemInHand(player);
+			ItemStack is = api.getAvailableItemInHand(player);
 			if (is == null) {
 				player.sendMessage(ChatColor.RED + "手中的物品无效，无法编辑。");
 				return true;
@@ -80,9 +84,9 @@ public class CommandAttr implements CommandExecutor {
 				if(arg3[0].equalsIgnoreCase("remove"))
 				{
 				try {
-					is = AttributesEditorAPI.removeAttribute(is);
+					is = api.removeAttribute(is);
 					if (is != null) {
-						AttributesEditorAPI.setItemInHand(player, is);
+						api.setItemInHand(player, is);
 						player.sendMessage(ChatColor.GREEN + "蓝字属性移除成功。");
 						return true;
 					} else {
@@ -90,7 +94,7 @@ public class CommandAttr implements CommandExecutor {
 						return true;
 					}
 				} catch (Exception e) {
-					AttributesEditorAPI.printStackTrace(player, e);
+					api.printStackTrace(player, e);
 					return true;
 				}
 				}
@@ -103,7 +107,7 @@ public class CommandAttr implements CommandExecutor {
 					else
 						im.spigot().setUnbreakable(true);
 					is.setItemMeta(im);
-					AttributesEditorAPI.setItemInHand(player, is);
+					api.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN + "为物品修改无法破坏属性成功。");
 					return true;
 					}
@@ -124,9 +128,9 @@ public class CommandAttr implements CommandExecutor {
 					if (!arg3[1].equalsIgnoreCase("remove"))
 						return false;
 					try {
-						is = AttributesEditorAPI.removeStoredEnchantment(is);
+						is = api.removeStoredEnchantment(is);
 						if (is != null) {
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "附魔书属性移除成功。");
 							return true;
 						} else {
@@ -134,7 +138,7 @@ public class CommandAttr implements CommandExecutor {
 							return true;
 						}
 					} catch (Exception e) {
-						AttributesEditorAPI.printStackTrace(player, e);
+						api.printStackTrace(player, e);
 						return true;
 					}
 				}
@@ -142,9 +146,9 @@ public class CommandAttr implements CommandExecutor {
 					if (!arg3[1].equalsIgnoreCase("remove"))
 						return false;
 					try {
-						is = AttributesEditorAPI.removeFireworks(is);
+						is = api.removeFireworks(is);
 						if (is != null) {
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "烟花火箭属性移除成功。");
 							return true;
 						} else {
@@ -152,7 +156,7 @@ public class CommandAttr implements CommandExecutor {
 							return true;
 						}
 					} catch (Exception e) {
-						AttributesEditorAPI.printStackTrace(player, e);
+						api.printStackTrace(player, e);
 						return true;
 					}
 				}
@@ -160,9 +164,9 @@ public class CommandAttr implements CommandExecutor {
 					if (!arg3[1].equalsIgnoreCase("remove"))
 						return false;
 					try {
-						is = AttributesEditorAPI.removePotionEffects(is);
+						is = api.removePotionEffects(is);
 						if (is != null) {
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "药水效果移除成功。");
 							return true;
 						} else {
@@ -170,7 +174,7 @@ public class CommandAttr implements CommandExecutor {
 							return true;
 						}
 					} catch (Exception e) {
-						AttributesEditorAPI.printStackTrace(player, e);
+						api.printStackTrace(player, e);
 						return true;
 					}
 				}
@@ -183,22 +187,22 @@ public class CommandAttr implements CommandExecutor {
 						return true;
 					}
 					try {
-						if (!AttributesEditorAPI.isAllowedHideType(hideType)) {
+						if (!api.isAllowedHideType(hideType)) {
 							player.sendMessage(ChatColor.RED + "这个属性类型无效。");
 							return true;
 						}
-						ItemFlag sHide = AttributesEditorAPI.decodeHideType(hideType);
+						ItemFlag sHide = api.decodeHideType(hideType);
 						ItemMeta im = is.getItemMeta();
 						if (im.hasItemFlag(sHide)) {
 							im.removeItemFlags(sHide);
 							is.setItemMeta(im);
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "成功显示了指定属性。");
 							return true;
 						} else {
 							im.addItemFlags(sHide);
 							is.setItemMeta(im);
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "成功隐藏了指定属性。");
 							return true;
 						}
@@ -212,7 +216,7 @@ public class CommandAttr implements CommandExecutor {
 					ItemMeta im = is.getItemMeta();
 					im.setDisplayName(newDisplay);
 					is.setItemMeta(im);
-					AttributesEditorAPI.setItemInHand(player, is);
+					api.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN + "成功修改物品名字为" + ChatColor.RESET + newDisplay);
 					return true;
 				}
@@ -222,7 +226,7 @@ public class CommandAttr implements CommandExecutor {
 					BookMeta bm = (BookMeta)is.getItemMeta();
 					bm.addPage(ChatColor.translateAlternateColorCodes('&', arg3[1]));
 					is.setItemMeta(bm);
-					AttributesEditorAPI.setItemInHand(player, is);
+					api.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN+"成功添加了一页书。");
 					return true;
 					}
@@ -243,7 +247,7 @@ public class CommandAttr implements CommandExecutor {
 					short enchid, level;
 					try {
 						int ench = Integer.valueOf(arg3[1]);
-						if (!AttributesEditorAPI.isAllowedEnchantment(ench)) {
+						if (!api.isAllowedEnchantment(ench)) {
 							player.sendMessage(ChatColor.RED + "在您的版本不支持这个附魔类型。");
 							return true;
 						}
@@ -258,12 +262,12 @@ public class CommandAttr implements CommandExecutor {
 						return true;
 					}
 					try {
-						is = AttributesEditorAPI.addStoredEnchantment(is, enchid, level);
-						AttributesEditorAPI.setItemInHand(player, is);
+						is = api.addStoredEnchantment(is, enchid, level);
+						api.setItemInHand(player, is);
 						player.sendMessage(ChatColor.GREEN + "附魔书属性添加成功。");
 						return true;
 					} catch (Exception e) {
-						AttributesEditorAPI.printStackTrace(player, e);
+						api.printStackTrace(player, e);
 						return true;
 					}
 				}
@@ -278,12 +282,12 @@ public class CommandAttr implements CommandExecutor {
 						return true;
 					}
 					try {
-						is = AttributesEditorAPI.changeFireworksFlightTime(is, flight);
-						AttributesEditorAPI.setItemInHand(player, is);
+						is = api.changeFireworksFlightTime(is, flight);
+						api.setItemInHand(player, is);
 						player.sendMessage(ChatColor.GREEN + "烟花飞行时间修改成功。");
 						return true;
 					} catch (Exception e) {
-						AttributesEditorAPI.printStackTrace(player, e);
+						api.printStackTrace(player, e);
 						return true;
 					}
 				}
@@ -292,7 +296,7 @@ public class CommandAttr implements CommandExecutor {
 					try {
 						enchantType = Integer.valueOf(arg3[1]);
 						level = Integer.valueOf(arg3[2]);
-						if (!AttributesEditorAPI.isAllowedEnchantment(enchantType)) {
+						if (!api.isAllowedEnchantment(enchantType)) {
 							player.sendMessage(ChatColor.RED + "在您的版本不支持这个附魔类型。");
 							return true;
 						}
@@ -309,7 +313,7 @@ public class CommandAttr implements CommandExecutor {
 					else if (level == 0) {
 						if (is.containsEnchantment(Enchantment.getById(enchantType))) {
 							is.removeEnchantment(Enchantment.getById(enchantType));
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "成功移除了附魔。");
 							return true;
 						} else {
@@ -317,7 +321,7 @@ public class CommandAttr implements CommandExecutor {
 							return true;
 						}
 					}
-					AttributesEditorAPI.setItemInHand(player, is);
+					api.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN + "修改附魔成功。");
 					return true;
 				}
@@ -355,7 +359,7 @@ public class CommandAttr implements CommandExecutor {
 					}
 					im.setLore(nowLore);
 					is.setItemMeta(im);
-					AttributesEditorAPI.setItemInHand(player, is);
+					api.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN + "修改Lore成功。");
 					return true;
 				}
@@ -369,7 +373,7 @@ public class CommandAttr implements CommandExecutor {
 						{
 							im.setAuthor(ChatColor.translateAlternateColorCodes('&',arg3[2]));
 							is.setItemMeta(im);
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "修改作者成功。");
 							return true;
 						}
@@ -377,7 +381,7 @@ public class CommandAttr implements CommandExecutor {
 						{
 							im.setTitle(ChatColor.translateAlternateColorCodes('&', arg3[2]));
 							is.setItemMeta(im);
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "修改标题成功。");
 							return true;
 						}
@@ -386,11 +390,11 @@ public class CommandAttr implements CommandExecutor {
 							try
 							{
 							int type = Integer.valueOf(arg3[2]);
-							if(AttributesEditorAPI.isAllowedGeneration(type))
+							if(api.isAllowedGeneration(type))
 							{
-							im.setGeneration(AttributesEditorAPI.decodeGeneration(type));
+							im.setGeneration(api.decodeGeneration(type));
 							is.setItemMeta(im);
-							AttributesEditorAPI.setItemInHand(player, is);
+							api.setItemInHand(player, is);
 							player.sendMessage(ChatColor.GREEN + "修改成书版本成功。");
 							return true;
 							}
@@ -426,14 +430,14 @@ public class CommandAttr implements CommandExecutor {
 								cache.remove(page - 1);
 								im.setPages(cache);
 								is.setItemMeta(im);
-								AttributesEditorAPI.setItemInHand(player, is);
+								api.setItemInHand(player, is);
 								player.sendMessage(ChatColor.GREEN + "移除指定页数成功。");
 							}
 							else
 							{
 								im.setPages(Arrays.asList(""));
 								is.setItemMeta(im);
-								AttributesEditorAPI.setItemInHand(player, is);
+								api.setItemInHand(player, is);
 								player.sendMessage(ChatColor.GREEN + "移除全部页数成功。");
 							}
 							return true;
@@ -447,7 +451,7 @@ public class CommandAttr implements CommandExecutor {
 						}
 						im.setPage(page, ChatColor.translateAlternateColorCodes('&', arg3[2]));
 						is.setItemMeta(im);
-						AttributesEditorAPI.setItemInHand(player, is);
+						api.setItemInHand(player, is);
 						player.sendMessage(ChatColor.GREEN + "修改指定页数成功。");
 						return true;
 						}
@@ -472,15 +476,15 @@ public class CommandAttr implements CommandExecutor {
 					sendInvavidMessage(player);
 					return true;
 				}
-				List<String> cache = AttributesEditorAPI.decodeTypeAndSlot(type, slot);
+				List<String> cache = api.decodeTypeAndSlot(type, slot);
 				try {
-					is = AttributesEditorAPI.addAttribute(is, cache.get(0), cache.get(1), amount);
-					AttributesEditorAPI.setItemInHand(player, is);
+					is = api.addAttribute(is, cache.get(0), cache.get(1), amount);
+					api.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN + "蓝字属性添加成功。");
 					System.out.println(is);
 					return true;
 				} catch (Exception e) {
-					AttributesEditorAPI.printStackTrace(player, e);
+					api.printStackTrace(player, e);
 					return true;
 				}
 			}
@@ -491,7 +495,7 @@ public class CommandAttr implements CommandExecutor {
 				int duration;
 				try {
 					id = Byte.valueOf(arg3[1]);
-					if (!AttributesEditorAPI.isAllowedPotionEffect(id)) {
+					if (!api.isAllowedPotionEffect(id)) {
 						player.sendMessage(ChatColor.RED + "您的版本不支持这个药水效果。");
 						return true;
 					}
@@ -506,12 +510,12 @@ public class CommandAttr implements CommandExecutor {
 					return true;
 				}
 				try {
-					is = AttributesEditorAPI.addPotionEffect(is, id, amplifier, showParticles, duration);
-					AttributesEditorAPI.setItemInHand(player, is);
+					is = api.addPotionEffect(is, id, amplifier, showParticles, duration);
+					api.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN + "药水效果添加成功。");
 					return true;
 				} catch (Exception e) {
-					AttributesEditorAPI.printStackTrace(player, e);
+					api.printStackTrace(player, e);
 					return true;
 				}
 			}
@@ -529,16 +533,16 @@ public class CommandAttr implements CommandExecutor {
 							throw new Exception();
 						if (c2 != 0 && c2 != 1)
 							throw new Exception();
-						if (!AttributesEditorAPI.isAllowedFireworkType(c3)) {
+						if (!api.isAllowedFireworkType(c3)) {
 							player.sendMessage(ChatColor.RED + "您的版本不支持这个烟花爆炸形态。");
 							return true;
 						}
 						flicker = Byte.valueOf(arg3[1]);
 						trail = Byte.valueOf(arg3[2]);
 						type = Byte.valueOf(arg3[3]);
-						colors = AttributesEditorAPI.decodeColors(Integer.valueOf(arg3[4]), Integer.valueOf(arg3[5]),
+						colors = api.decodeColors(Integer.valueOf(arg3[4]), Integer.valueOf(arg3[5]),
 								Integer.valueOf(arg3[6]));
-						fadeColors = AttributesEditorAPI.decodeColors(Integer.valueOf(arg3[7]),
+						fadeColors = api.decodeColors(Integer.valueOf(arg3[7]),
 								Integer.valueOf(arg3[8]), Integer.valueOf(arg3[9]));
 						if (colors >= 16777216 || fadeColors >= 16777216) {
 							player.sendMessage(ChatColor.RED + "RGB颜色溢出。[三色值各应不大于255，且应不小于0]");
@@ -550,12 +554,12 @@ public class CommandAttr implements CommandExecutor {
 					}
 
 					try {
-						is = AttributesEditorAPI.addFireworks(is, flicker, trail, type, colors, fadeColors);
-						AttributesEditorAPI.setItemInHand(player, is);
+						is = api.addFireworks(is, flicker, trail, type, colors, fadeColors);
+						api.setItemInHand(player, is);
 						player.sendMessage(ChatColor.GREEN + "烟花属性添加成功。");
 						return true;
 					} catch (Exception e) {
-						AttributesEditorAPI.printStackTrace(player, e);
+						api.printStackTrace(player, e);
 						return true;
 					}
 				}
@@ -569,16 +573,16 @@ public class CommandAttr implements CommandExecutor {
 						throw new Exception();
 					if (c2 != 0 && c2 != 1)
 						throw new Exception();
-					if (!AttributesEditorAPI.isAllowedFireworkType(c3)) {
+					if (!api.isAllowedFireworkType(c3)) {
 						player.sendMessage(ChatColor.RED + "您的版本不支持这个烟花爆炸形态。");
 						return true;
 					}
 					flicker = Byte.valueOf(arg3[1]);
 					trail = Byte.valueOf(arg3[2]);
 					type = Byte.valueOf(arg3[3]);
-					colors = AttributesEditorAPI.decodeColors(Integer.valueOf(arg3[4]), Integer.valueOf(arg3[5]),
+					colors = api.decodeColors(Integer.valueOf(arg3[4]), Integer.valueOf(arg3[5]),
 							Integer.valueOf(arg3[6]));
-					fadeColors = AttributesEditorAPI.decodeColors(Integer.valueOf(arg3[7]), Integer.valueOf(arg3[8]),
+					fadeColors = api.decodeColors(Integer.valueOf(arg3[7]), Integer.valueOf(arg3[8]),
 							Integer.valueOf(arg3[9]));
 					if (colors >= 16777216 || fadeColors >= 16777216) {
 						player.sendMessage(ChatColor.RED + "RGB颜色溢出。[三色值各应不大于255，且应不小于0]");
@@ -589,12 +593,12 @@ public class CommandAttr implements CommandExecutor {
 					return true;
 				}
 				try {
-					is = AttributesEditorAPI.changeFireworkCharge(is, flicker, trail, type, colors, fadeColors);
-					AttributesEditorAPI.setItemInHand(player, is);
+					is = api.changeFireworkCharge(is, flicker, trail, type, colors, fadeColors);
+					api.setItemInHand(player, is);
 					player.sendMessage(ChatColor.GREEN + "烟火之星修改成功。");
 					return true;
 				} catch (Exception e) {
-					AttributesEditorAPI.printStackTrace(player, e);
+					api.printStackTrace(player, e);
 					return true;
 				}
 			}
