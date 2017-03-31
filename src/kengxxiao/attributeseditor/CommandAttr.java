@@ -23,8 +23,25 @@ public class CommandAttr implements CommandExecutor {
 	public static List<Integer> allowedEnchantment, allowedFlags = Arrays.asList(1, 2, 3, 4, 5, 6);
 	public static List<Integer> allowedPotionEffects, allowedFireworkType = Arrays.asList(0, 1, 2, 3, 4);
 	public static List<Integer> allowedGeneration = Arrays.asList(0,1,2,3);
+	private List<String> versions;
 
 	public CommandAttr(String ver) {
+		versions  = new ArrayList<String>();
+		versions.add("1.6");
+		versions.add("1.7");
+		versions.add("1.8");
+		versions.add("1.9");
+		versions.add("1.10");
+		versions.add("1.11");
+		
+		for (String versions: (List<String>)versions){
+			if (ver.startsWith(versions)){
+				version = Integer.valueOf(versions.substring(2));
+				break;
+			}
+		}
+		
+		/*
 		if (!ver.substring(2, 4).contains("-") && !ver.substring(2, 4).contains("\\.")) {
 			version = 10;
 			allowedType = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
@@ -33,7 +50,15 @@ public class CommandAttr implements CommandExecutor {
 			allowedPotionEffects = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 					21, 22, 23, 24, 25, 26, 27);
 		} else {
-			version = Integer.valueOf(ver.substring(2, 3));
+		*/
+			//version = Integer.valueOf(ver.substring(2, 3));
+			if (version == 10 || version == 11) {
+				allowedType = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+				allowedEnchantment = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 32, 33, 34, 35, 48, 49,
+						50, 51, 61, 62, 8, 9, 70);
+				allowedPotionEffects = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+						21, 22, 23, 24, 25, 26, 27);
+			}
 			if (version < 7)
 				allowedEnchantment = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 32, 33, 34, 35, 48,
 						49, 50, 51);
@@ -58,7 +83,7 @@ public class CommandAttr implements CommandExecutor {
 					allowedType = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
 			} else if (version <= 8)
 				allowedType = Arrays.asList(1, 2, 3, 4, 5);
-		}
+		//}
 	}
 
 	@Override
