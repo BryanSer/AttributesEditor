@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta.Generation;
-
 import kengxxiao.attributeseditor.CommandAttr;
 import kengxxiao.attributeseditor.ReflectionUtil;
 
@@ -17,12 +16,8 @@ import kengxxiao.attributeseditor.ReflectionUtil;
  * @author Kengxxiao
  *
  */
-public class AttributesEditorAPI implements IAttributesEditorAPI {
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#decodeTypeAndSlot(int, int)
-	 */
-	@Override
-	public List<String> decodeTypeAndSlot(int type, int slot) {
+public class AttributesEditorAPI {
+	public static List<String> decodeTypeAndSlot(int type, int slot) {
 		String sslot = null, stype = null;
 		switch (type) {
 		case 1:
@@ -75,11 +70,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		}
 		return Arrays.asList(stype, sslot);
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#decodeHideType(int)
-	 */
-	@Override
-	public ItemFlag decodeHideType(int hideType) {
+	public static ItemFlag decodeHideType(int hideType) {
 		switch (hideType) {
 		case 1:
 			return ItemFlag.HIDE_ATTRIBUTES;
@@ -96,11 +87,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		}
 		return null;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#decodeGeneration(int)
-	 */
-	@Override
-	public Generation decodeGeneration(int generation)
+	public static Generation decodeGeneration(int generation)
 	{
 		switch (generation) {
 		case 0:
@@ -114,28 +101,16 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		}
 		return null;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#decodeColors(int, int, int)
-	 */
-	@Override
-	public int decodeColors(int r, int g, int b) {
+	public static int decodeColors(int r, int g, int b) {
 		if (r > 255 || g > 255 || b > 255 || r < 0 || g < 0 || b < 0)
 			return 16777216;
 		return 65536 * r + 256 * g + b;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#getMajorVersion()
-	 */
-	@Override
-	public int getMajorVersion()
+	public static int getMajorVersion()
 	{
 		return CommandAttr.version;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#getAvailableItemInHand(org.bukkit.entity.Player)
-	 */
-	@Override
-	public ItemStack getAvailableItemInHand(Player player)
+	public static ItemStack getAvailableItemInHand(Player player)
 	{
 		ItemStack is = null;
 		if (CommandAttr.version >= 9)
@@ -148,45 +123,28 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 			return null;
 		return is;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#setItemInHand(org.bukkit.entity.Player, org.bukkit.inventory.ItemStack)
-	 */
-	@Override
-	public void setItemInHand(Player player,ItemStack itemstack)
+	public static void setItemInHand(Player player,ItemStack itemstack)
 	{
 		if (CommandAttr.version >= 9)
 			player.getInventory().setItemInMainHand(itemstack);
 		else
 			player.setItemInHand(itemstack);
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#printStackTrace(org.bukkit.entity.Player, java.lang.Exception)
-	 */
-	@Override
-	public void printStackTrace(Player p,Exception e)
+	public static void printStackTrace(Player p,Exception e)
 	{
 		p.sendMessage(ChatColor.RED+"插件执行时抛出了异常，详情请查看控制台。");
 		e.printStackTrace();
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#changeFireworksFlightTime(org.bukkit.inventory.ItemStack, byte)
-	 */
-	@Override
-	public ItemStack changeFireworksFlightTime(ItemStack itemstack,byte flightTime) throws Exception
+	public static ItemStack changeFireworksFlightTime(ItemStack itemstack,byte flightTime) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		Object tag = ((boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag"))? ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "getTag"): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
-		Object fireworks = ((boolean) ReflectionUtil.invokeMethod(tag.getClass(), tag, "hasKey",new Class[] { String.class }, new Object[] { "Fireworks" }))? ReflectionUtil.invokeMethod(tag.getClass(), tag, "get",new Class[] { String.class }, new Object[] { "Fireworks" }): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
-		ReflectionUtil.invokeMethod(fireworks.getClass(), fireworks,"setByte",new Class[]{String.class,byte.class},new Object[]{"Flight",flightTime});
+		Object fireworks = ((boolean) ReflectionUtil.invokeMethod(tag.getClass(), tag, "hasKey",new Class[] { String.class }, new Object[] { "Fireworks" }))? ReflectionUtil.invokeMethod(tag.getClass(), tag, "get",new Class[] { String.class }, new Object[] { "Fireworks" }): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});ReflectionUtil.invokeMethod(fireworks.getClass(), fireworks,"setByte",new Class[]{String.class,byte.class},new Object[]{"Flight",flightTime});
 		ReflectionUtil.invokeMethod(tag.getClass(), tag, "set",new Class[] { String.class, ReflectionUtil.getNMSClass("NBTBase") },new Object[] { "Fireworks", fireworks });
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#changeFireworkCharge(org.bukkit.inventory.ItemStack, byte, byte, byte, int, int)
-	 */
-	@Override
-	public ItemStack changeFireworkCharge(ItemStack itemstack,byte flicker,byte trail,byte type,int colors,int fadeColors) throws Exception
+	public static ItemStack changeFireworkCharge(ItemStack itemstack,byte flicker,byte trail,byte type,int colors,int fadeColors) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		Object tag = ((boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag")) ? ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "getTag"): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
@@ -200,11 +158,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#addAttribute(org.bukkit.inventory.ItemStack, java.lang.String, java.lang.String, double)
-	 */
-	@Override
-	public ItemStack addAttribute(ItemStack itemstack,String type,String slot,double amount) throws Exception
+	public static ItemStack addAttribute(ItemStack itemstack,String type,String slot,double amount) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null,"asNMSCopy",new Class[]{ItemStack.class},new Object[]{itemstack});
 		Object tag = ((boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag")) ? ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "getTag") : ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
@@ -222,11 +176,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"setTag",new Class[]{ReflectionUtil.getNMSClass("NBTTagCompound")},new Object[]{tag});
 		return (ItemStack)ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null,"asBukkitCopy",new Class[]{ReflectionUtil.getNMSClass("ItemStack")},new Object[]{nmsItemStack});
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#addStoredEnchantment(org.bukkit.inventory.ItemStack, short, short)
-	 */
-	@Override
-	public ItemStack addStoredEnchantment(ItemStack itemstack,short enchType,short level) throws Exception
+	public static ItemStack addStoredEnchantment(ItemStack itemstack,short enchType,short level) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		Object tag = ((boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag"))? ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "getTag"): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
@@ -239,11 +189,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#addPotionEffect(org.bukkit.inventory.ItemStack, byte, byte, byte, int)
-	 */
-	@Override
-	public ItemStack addPotionEffect(ItemStack itemstack,byte potionType,byte amplifier,byte showParticles,int duration) throws Exception
+	public static ItemStack addPotionEffect(ItemStack itemstack,byte potionType,byte amplifier,byte showParticles,int duration) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		Object tag = ((boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag")) ? ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "getTag"): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
@@ -258,11 +204,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#addFireworks(org.bukkit.inventory.ItemStack, byte, byte, byte, int, int)
-	 */
-	@Override
-	public ItemStack addFireworks(ItemStack itemstack,byte flicker,byte trail,byte type,int colors,int fadeColors) throws Exception
+	public static ItemStack addFireworks(ItemStack itemstack,byte flicker,byte trail,byte type,int colors,int fadeColors) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		Object tag = ((boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag"))? ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "getTag"): ReflectionUtil.invokeConstructor(ReflectionUtil.getNMSClass("NBTTagCompound"),new Class[] {}, new Object[] {});
@@ -295,11 +237,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null,"asBukkitCopy",new Class[]{ReflectionUtil.getNMSClass("ItemStack")},new Object[]{nmsItemStack});
 	}
 	*/
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#removeAttribute(org.bukkit.inventory.ItemStack)
-	 */
-	@Override
-	public ItemStack removeAttribute(ItemStack itemstack) throws Exception
+	public static ItemStack removeAttribute(ItemStack itemstack) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		boolean tag = (boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag");
@@ -313,11 +251,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag2 });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#removeStoredEnchantment(org.bukkit.inventory.ItemStack)
-	 */
-	@Override
-	public ItemStack removeStoredEnchantment(ItemStack itemstack) throws Exception
+	public static ItemStack removeStoredEnchantment(ItemStack itemstack) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		boolean tag = (boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag");
@@ -331,11 +265,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag2 });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#removeFireworks(org.bukkit.inventory.ItemStack)
-	 */
-	@Override
-	public ItemStack removeFireworks(ItemStack itemstack) throws Exception
+	public static ItemStack removeFireworks(ItemStack itemstack) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		boolean tag = (boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag");
@@ -354,11 +284,7 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(),nmsItemStack,"setTag",new Class[]{ReflectionUtil.getNMSClass("NBTTagCompound")},new Object[]{tag2});
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#removePotionEffects(org.bukkit.inventory.ItemStack)
-	 */
-	@Override
-	public ItemStack removePotionEffects(ItemStack itemstack) throws Exception
+	public static ItemStack removePotionEffects(ItemStack itemstack) throws Exception
 	{
 		Object nmsItemStack = ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asNMSCopy",new Class[] { ItemStack.class }, new Object[] { itemstack });
 		boolean tag = (boolean) ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack,"hasTag");
@@ -372,77 +298,49 @@ public class AttributesEditorAPI implements IAttributesEditorAPI {
 		ReflectionUtil.invokeMethod(nmsItemStack.getClass(), nmsItemStack, "setTag",new Class[] { ReflectionUtil.getNMSClass("NBTTagCompound") }, new Object[] { tag2 });
 		return (ItemStack) ReflectionUtil.invokeMethod(ReflectionUtil.getBukkitClass("inventory.CraftItemStack"), null, "asBukkitCopy",new Class[] { ReflectionUtil.getNMSClass("ItemStack") }, new Object[] { nmsItemStack });
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#isAllowedEnchantment(int)
-	 */
-	@Override
-	public boolean isAllowedEnchantment(int enchid)
+	public static boolean isAllowedEnchantment(int enchid)
 	{
 		if(CommandAttr.allowedEnchantment.contains(enchid))
 			return true;
 		else 
 			return false;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#isAllowedFireworkType(int)
-	 */
-	@Override
-	public boolean isAllowedFireworkType(int fireworkType)
+	public static boolean isAllowedFireworkType(int fireworkType)
 	{
 		if(CommandAttr.allowedFireworkType.contains(fireworkType))
 			return true;
 		else 
 			return false;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#isAllowedHideType(int)
-	 */
-	@Override
-	public boolean isAllowedHideType(int hideType)
+	public static boolean isAllowedHideType(int hideType)
 	{
 		if(CommandAttr.allowedFlags.contains(hideType))
 			return true;
 		else 
 			return false;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#isAllowedPotionEffect(int)
-	 */
-	@Override
-	public boolean isAllowedPotionEffect(int potionid)
+	public static boolean isAllowedPotionEffect(int potionid)
 	{
 		if(CommandAttr.allowedPotionEffects.contains(potionid))
 			return true;
 		else 
 			return false;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#isAllowedSlot(int)
-	 */
-	@Override
-	public boolean isAllowedSlot(int slot)
+	public static boolean isAllowedSlot(int slot)
 	{
 		if(CommandAttr.allowedSlot.contains(slot))
 			return true;
 		else 
 			return false;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#isAllowedAttrType(int)
-	 */
-	@Override
-	public boolean isAllowedAttrType(int attrType)
+	public static boolean isAllowedAttrType(int attrType)
 	{
 		if(CommandAttr.allowedType.contains(attrType))
 		return true;
 		else
 			return false;
 	}
-	/* (non-Javadoc)
-	 * @see kengxxiao.attributeseditor.api.IAttributesEditorAPI#isAllowedGeneration(int)
-	 */
-	@Override
-	public boolean isAllowedGeneration(int generation)
+	public static boolean isAllowedGeneration(int generation)
 	{
 		if(CommandAttr.allowedGeneration.contains(generation))
 			return true;

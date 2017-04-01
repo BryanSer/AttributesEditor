@@ -9,15 +9,18 @@ import org.bukkit.Bukkit;
 
 public class ReflectionUtil {
 
-	public static final String serverVersion = null;
+	public static final String serverVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+	private static boolean forge = false;
 
 	static {
-		try {
+		/*try {
 			Class.forName("org.bukkit.Bukkit");
-			setObject(ReflectionUtil.class, null, "serverVersion", Bukkit.getServer().getClass().getPackage().getName()
-					.substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf('.') + 1));
-		} catch (Exception e) {
-		}
+			setObject(ReflectionUtil.class, null, "serverVersion", Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]);
+		} catch (Exception e) {} */
+		try {
+			Bukkit.getServer().getClass().getClassLoader().loadClass("net.minecraft.nbt.NBTBase");
+            forge = true;
+        } catch (ClassNotFoundException ignored) {}
 	}
 
 	public static Field getField(Class<?> clazz, String fname) throws Exception {
@@ -52,6 +55,7 @@ public class ReflectionUtil {
 
 	public static Method getMethod(Class<?> clazz, String mname) throws Exception {
 		Method m = null;
+		mname = methodCauldronMagic(clazz, mname);
 		try {
 			m = clazz.getDeclaredMethod(mname);
 		} catch (Exception e) {
@@ -77,6 +81,7 @@ public class ReflectionUtil {
 
 	public static Method getMethod(Class<?> clazz, String mname, Class<?>... args) throws Exception {
 		Method m = null;
+		mname = methodCauldronMagic(clazz, mname);
 		try {
 			m = clazz.getDeclaredMethod(mname, args);
 		} catch (Exception e) {
@@ -127,11 +132,14 @@ public class ReflectionUtil {
 	}
 
 	public static Class<?> getNMSClass(String clazz) throws Exception {
-		return Class.forName("net.minecraft.server." + serverVersion + "." + clazz);
+		String nmsPackname = "net.minecraft.server." + serverVersion + ".";
+		nmsPackname = classCauldronMagic(nmsPackname, clazz);
+		return Class.forName(nmsPackname + clazz);
 	}
 
 	public static Class<?> getBukkitClass(String clazz) throws Exception {
-		return Class.forName("org.bukkit.craftbukkit." + serverVersion + "." + clazz);
+		String cbPackname = "org.bukkit.craftbukkit." + serverVersion + ".";
+		return Class.forName(cbPackname + clazz);
 	}
 
 	public static Object invokeMethod(Class<?> clazz, Object obj, String method, Class<?>[] args, Object... initargs)
@@ -157,6 +165,54 @@ public class ReflectionUtil {
 
 	public static Object invokeConstructor(Class<?> clazz, Class<?>[] args, Object... initargs) throws Exception {
 		return getConstructor(clazz, args).newInstance(initargs);
+	}
+	
+	private static String methodCauldronMagic(Class<?> clazz, String mname) {
+		if (!forge || !(clazz.getName().startsWith("net.minecraft"))) return mname;
+		// NMS method mapping & obfuscate < * CAULDRON COMPATIBILITY * >
+		String original = mname;
+		if (clazz.getName().equals("net.minecraft.item.ItemStack") ) {
+			//if (mname.equals("hasTag")) mname = "hasTagCompound";
+			//if (mname.equals("getTag")) mname = "getTagCompound";
+			//if (mname.equals("setTag")) mname = "setTagCompound";
+			if (mname.equals("hasTag")) mname = "func_77942_o";
+			if (mname.equals("getTag")) mname = "func_77978_p";
+			if (mname.equals("setTag")) mname = "func_77982_d";
+		}
+		if (clazz.getName().equals("net.minecraft.nbt.NBTTagCompound") ) {
+			//if (mname.equals("get")) mname = "getTag";
+			//if (mname.equals("set")) mname = "setTag";
+			//if (mname.equals("remove")) mname = "removeTag";
+			//if (mname.equals("hasKey")) mname = "hasKey";
+			if (mname.equals("get")) mname = "func_74781_a";
+			if (mname.equals("set")) mname = "func_74782_a";
+			if (mname.equals("remove")) mname = "func_82580_o";
+			if (mname.equals("hasKey")) mname = "func_74764_b";
+			if (mname.equals("setByte")) mname = "func_74774_a";
+			if (mname.equals("setIntArray")) mname = "func_74783_a";
+			if (mname.equals("setString")) mname = "func_74778_a";
+			if (mname.equals("setDouble")) mname = "func_74780_a";
+			if (mname.equals("setInt")) mname = "func_74768_a";
+			if (mname.equals("setShort")) mname = "func_74777_a";
+		}
+		if (clazz.getName().equals("net.minecraft.nbt.NBTTagList")) {
+			//if (mname.equals("add")) mname = "appendTag";
+			if (mname.equals("add")) mname = "func_74742_a";
+		}
+		if (!(mname.equalsIgnoreCase(original))) Bukkit.getLogger().info("Applying Cauldron Magic, replacing method " + clazz.getName() + original + " to " + mname);
+		return mname;
+	}
+	
+	private static String classCauldronMagic(String nmsPackname, String clazz) {
+		if (!forge || !(nmsPackname.startsWith("net.minecraft.server"))) return nmsPackname;
+		// NMS class mapping < * CAULDRON COMPATIBILITY * >
+		String original = nmsPackname;
+		String subpack = "";
+		if (clazz.startsWith("NBT")) subpack = "nbt.";
+		if (clazz.startsWith("Item")) subpack = "item.";
+		nmsPackname = "net.minecraft." + subpack;
+		Bukkit.getLogger().info("Applying Cauldron Magic, replacing class " + original + clazz + " to " + nmsPackname + clazz);
+		return nmsPackname;
 	}
 
 }
